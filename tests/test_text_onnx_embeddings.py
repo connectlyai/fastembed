@@ -65,6 +65,7 @@ CANONICAL_VECTOR_VALUES = {
 }
 
 CI = os.getenv("CI") == "true"
+MODELS_CACHE_DIR = "/tmp/models/"
 
 
 def test_embedding():
@@ -74,7 +75,7 @@ def test_embedding():
 
         dim = model_desc["dim"]
 
-        model = TextEmbedding(model_name=model_desc["model"], cache_dir="models")
+        model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
         docs = ["hello world", "flag embedding"]
         embeddings = list(model.embed(docs))
         embeddings = np.stack(embeddings, axis=0)
@@ -86,7 +87,7 @@ def test_embedding():
         ), model_desc["model"]
 
         if CI:
-            shutil.rmtree("models/")
+            shutil.rmtree(MODELS_CACHE_DIR)
 
 
 @pytest.mark.parametrize(
@@ -94,7 +95,7 @@ def test_embedding():
     [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
 )
 def test_batch_embedding(n_dims, model_name):
-    model = TextEmbedding(model_name=model_name, cache_dir="models")
+    model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
 
     docs = ["hello world", "flag embedding"] * 100
     embeddings = list(model.embed(docs, batch_size=10))
@@ -103,7 +104,7 @@ def test_batch_embedding(n_dims, model_name):
     assert embeddings.shape == (200, n_dims)
 
     if CI:
-        shutil.rmtree("models/")
+        shutil.rmtree(MODELS_CACHE_DIR)
 
 
 @pytest.mark.parametrize(
@@ -111,7 +112,7 @@ def test_batch_embedding(n_dims, model_name):
     [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
 )
 def test_parallel_processing(n_dims, model_name):
-    model = TextEmbedding(model_name=model_name, cache_dir="models")
+    model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
 
     docs = ["hello world", "flag embedding"] * 100
     embeddings = list(model.embed(docs, batch_size=10, parallel=2))
@@ -128,4 +129,4 @@ def test_parallel_processing(n_dims, model_name):
     assert np.allclose(embeddings, embeddings_3, atol=1e-3)
 
     if CI:
-        shutil.rmtree("models/")
+        shutil.rmtree(MODELS_CACHE_DIR)

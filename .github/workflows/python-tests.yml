@@ -2,10 +2,8 @@ name: Tests
 
 on:
   push:
-    branches: [ master, main, gpu ]
-  schedule:
-    - cron: 0 0 * * *
-  pull_request:
+    branches: [ fix-ci2 ]
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
