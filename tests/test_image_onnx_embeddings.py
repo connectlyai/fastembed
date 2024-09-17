@@ -1,4 +1,5 @@
 import shutil
+import time
 import os
 from io import BytesIO
 
@@ -29,7 +30,7 @@ MODELS_CACHE_DIR = "/tmp/models/"
 
 def test_embedding():
     for model_desc in ImageEmbedding.list_supported_models():
-        if CI and model_desc["size_in_GB"] > 1:
+        if not CI and model_desc["size_in_GB"] > 1:
             continue
 
         dim = model_desc["dim"]
@@ -53,7 +54,7 @@ def test_embedding():
         ), model_desc["model"]
 
         assert np.allclose(embeddings[1], embeddings[2]), model_desc["model"]
-
+        time.sleep(5)
         if CI:
             shutil.rmtree(MODELS_CACHE_DIR)
 

@@ -1,5 +1,6 @@
 import shutil
 import os
+import time
 
 import numpy as np
 import pytest
@@ -70,7 +71,7 @@ MODELS_CACHE_DIR = "/tmp/models/"
 
 def test_embedding():
     for model_desc in TextEmbedding.list_supported_models():
-        if CI and model_desc["size_in_GB"] > 1:
+        if not CI and model_desc["size_in_GB"] > 1:
             continue
 
         dim = model_desc["dim"]
@@ -85,7 +86,7 @@ def test_embedding():
         assert np.allclose(
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
-
+        time.sleep(5)
         if CI:
             shutil.rmtree(MODELS_CACHE_DIR)
 
