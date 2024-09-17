@@ -1,6 +1,7 @@
 import os
 import shutil
 import time
+from tempfile import gettempdir
 
 import numpy as np
 
@@ -94,7 +95,7 @@ def check_permissions(folder: str):
 
 CI = os.getenv("CI") == "true"
 
-MODELS_CACHE_DIR = "/tmp/models/"
+MODELS_CACHE_DIR = gettempdir() if CI else "/tmp/models/"
 
 
 def test_embedding():
