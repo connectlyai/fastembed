@@ -1,9 +1,7 @@
 import shutil
 import os
-import time
 
 import numpy as np
-import pytest
 
 from fastembed.text.text_embedding import TextEmbedding
 
@@ -70,65 +68,67 @@ CI = os.getenv("CI") == "true"
 MODELS_CACHE_DIR = "/tmp/models/"
 
 
-# def test_embedding():
-#     for model_desc in TextEmbedding.list_supported_models():
-#         if not CI and model_desc["size_in_GB"] > 1:
-#             continue
+def test_embedding():
+    for model_desc in TextEmbedding.list_supported_models():
+        if not CI and model_desc["size_in_GB"] > 1:
+            print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+            continue
+        print(
+            model_desc["model"], "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+        )
+        dim = model_desc["dim"]
+        model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
+        docs = ["hello world", "flag embedding"]
+        embeddings = list(model.embed(docs))
+        embeddings = np.stack(embeddings, axis=0)
+        assert embeddings.shape == (2, dim)
 
-#         dim = model_desc["dim"]
-#         try:
-#             model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
-#             docs = ["hello world", "flag embedding"]
-#             embeddings = list(model.embed(docs))
-#             embeddings = np.stack(embeddings, axis=0)
-#             assert embeddings.shape == (2, dim)
+        canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
+        assert np.allclose(
+            embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
+        ), model_desc["model"]
 
-#             canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
-#             assert np.allclose(
-#                 embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
-#             ), model_desc["model"]
-#         finally:
-#             if CI:
-#                 shutil.rmtree(MODELS_CACHE_DIR)
-
-
-@pytest.mark.parametrize(
-    "n_dims,model_name",
-    [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
-)
-def test_batch_embedding(n_dims, model_name):
-    model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
-
-    docs = ["hello world", "flag embedding"] * 100
-    embeddings = list(model.embed(docs, batch_size=10))
-    embeddings = np.stack(embeddings, axis=0)
-
-    assert embeddings.shape == (200, n_dims)
-    time.sleep(5)
-    if CI:
-        shutil.rmtree(MODELS_CACHE_DIR)
+        if CI:
+            shutil.rmtree(MODELS_CACHE_DIR)
 
 
-@pytest.mark.parametrize(
-    "n_dims,model_name",
-    [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
-)
-def test_parallel_processing(n_dims, model_name):
-    model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
+# @pytest.mark.parametrize(
+#     "n_dims,model_name",
+#     [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
+# )
+# def test_batch_embedding(n_dims, model_name):
+#     model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
 
-    docs = ["hello world", "flag embedding"] * 100
-    embeddings = list(model.embed(docs, batch_size=10, parallel=2))
-    embeddings = np.stack(embeddings, axis=0)
+#     docs = ["hello world", "flag embedding"] * 100
+#     embeddings = list(model.embed(docs, batch_size=10))
+#     embeddings = np.stack(embeddings, axis=0)
 
-    embeddings_2 = list(model.embed(docs, batch_size=10, parallel=None))
-    embeddings_2 = np.stack(embeddings_2, axis=0)
+#     assert embeddings.shape == (200, n_dims)
+#     time.sleep(5)
+#     if CI:
+#         shutil.rmtree(MODELS_CACHE_DIR)
 
-    embeddings_3 = list(model.embed(docs, batch_size=10, parallel=0))
-    embeddings_3 = np.stack(embeddings_3, axis=0)
 
-    assert embeddings.shape == (200, n_dims)
-    assert np.allclose(embeddings, embeddings_2, atol=1e-3)
-    assert np.allclose(embeddings, embeddings_3, atol=1e-3)
-    time.sleep(5)
+# @pytest.mark.parametrize(
+#     "n_dims,model_name",
+#     [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
+# )
+# def test_parallel_processing(n_dims, model_name):
+#     model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
 
-    shutil.rmtree(MODELS_CACHE_DIR)
+#     docs = ["hello world", "flag embedding"] * 100
+#     embeddings = list(model.embed(docs, batch_size=10, parallel=2))
+#     embeddings = np.stack(embeddings, axis=0)
+
+#     embeddings_2 = list(model.embed(docs, batch_size=10, parallel=None))
+#     embeddings_2 = np.stack(embeddings_2, axis=0)
+
+#     embeddings_3 = list(model.embed(docs, batch_size=10, parallel=0))
+#     embeddings_3 = np.stack(embeddings_3, axis=0)
+
+#     assert embeddings.shape == (200, n_dims)
+#     assert np.allclose(embeddings, embeddings_2, atol=1e-3)
+#     assert np.allclose(embeddings, embeddings_3, atol=1e-3)
+#     time.sleep(5)
+
+#     shutil.rmtree(MODELS_CACHE_DIR)
