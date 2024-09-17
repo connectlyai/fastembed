@@ -104,7 +104,7 @@ def test_batch_embedding(n_dims, model_name):
     embeddings = np.stack(embeddings, axis=0)
 
     assert embeddings.shape == (200, n_dims)
-    time.delay(5)
+    time.sleep(5)
     if CI:
         shutil.rmtree(MODELS_CACHE_DIR)
 
@@ -129,7 +129,7 @@ def test_parallel_processing(n_dims, model_name):
     assert embeddings.shape == (200, n_dims)
     assert np.allclose(embeddings, embeddings_2, atol=1e-3)
     assert np.allclose(embeddings, embeddings_3, atol=1e-3)
-    time.delay(5)
+    time.sleep(5)
     try:
         shutil.rmtree(MODELS_CACHE_DIR)
     except Exception as e:
