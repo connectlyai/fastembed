@@ -74,6 +74,9 @@ def test_embedding():
         count += 1
         if not CI and model_desc["size_in_GB"] > 1:
             continue
+        print(
+            f"{model_desc} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
+        )
         dim = model_desc["dim"]
         print(f"{count} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
         model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
