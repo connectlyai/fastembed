@@ -1,5 +1,6 @@
 import os
 import shutil
+import time
 
 import numpy as np
 
@@ -125,6 +126,7 @@ def test_embedding():
         if CI:
             shutil.rmtree(MODELS_CACHE_DIR)
             print("================================")
+            time.sleep(20)
         # except PermissionError as e:
         #     print(f"got permission error with error {e}")
 
