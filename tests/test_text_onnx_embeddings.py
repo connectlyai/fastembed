@@ -65,7 +65,7 @@ CANONICAL_VECTOR_VALUES = {
 }
 
 CI = os.getenv("CI") == "true"
-print(CI, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+
 MODELS_CACHE_DIR = "/tmp/models/"
 
 
@@ -75,23 +75,20 @@ def test_embedding():
             continue
 
         dim = model_desc["dim"]
+        try:
+            model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
+            docs = ["hello world", "flag embedding"]
+            embeddings = list(model.embed(docs))
+            embeddings = np.stack(embeddings, axis=0)
+            assert embeddings.shape == (2, dim)
 
-        model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
-        docs = ["hello world", "flag embedding"]
-        embeddings = list(model.embed(docs))
-        embeddings = np.stack(embeddings, axis=0)
-        assert embeddings.shape == (2, dim)
-
-        canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
-        assert np.allclose(
-            embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
-        ), model_desc["model"]
-        # time.sleep(5)
-        if CI:
-            try:
+            canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
+            assert np.allclose(
+                embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
+            ), model_desc["model"]
+        finally:
+            if CI:
                 shutil.rmtree(MODELS_CACHE_DIR)
-            except Exception as e:
-                raise e
 
 
 @pytest.mark.parametrize(
