@@ -63,6 +63,34 @@ CANONICAL_VECTOR_VALUES = {
     "Qdrant/clip-ViT-B-32-text": np.array([0.0083, 0.0103, -0.0138, 0.0199, -0.0069]),
 }
 
+
+def check_permissions(folder: str):
+    print(f"Checking permissions for folder: {folder}")
+
+    # Check if folder exists
+    if not os.path.exists(folder):
+        print(f"Folder {folder} does not exist.")
+        return
+
+    # Check read permission
+    if os.access(folder, os.R_OK):
+        print(f"{folder} is readable.")
+    else:
+        print(f"{folder} is NOT readable.")
+
+    # Check write permission
+    if os.access(folder, os.W_OK):
+        print(f"{folder} is writable.")
+    else:
+        print(f"{folder} is NOT writable.")
+
+    # Check execute permission
+    if os.access(folder, os.X_OK):
+        print(f"{folder} is executable.")
+    else:
+        print(f"{folder} is NOT executable.")
+
+
 CI = os.getenv("CI") == "true"
 
 MODELS_CACHE_DIR = "/tmp/models/"
@@ -91,12 +119,14 @@ def test_embedding():
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
 
-        try:
-            if CI:
-                shutil.rmtree(MODELS_CACHE_DIR)
-                print("================================")
-        except PermissionError as e:
-            print(f"got permission error with error {e}")
+        check_permissions(MODELS_CACHE_DIR)
+        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+        # try:
+        if CI:
+            shutil.rmtree(MODELS_CACHE_DIR)
+            print("================================")
+        # except PermissionError as e:
+        #     print(f"got permission error with error {e}")
 
 
 # @pytest.mark.parametrize(
