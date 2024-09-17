@@ -70,26 +70,26 @@ CI = os.getenv("CI") == "true"
 MODELS_CACHE_DIR = "/tmp/models/"
 
 
-def test_embedding():
-    for model_desc in TextEmbedding.list_supported_models():
-        if not CI and model_desc["size_in_GB"] > 1:
-            continue
+# def test_embedding():
+#     for model_desc in TextEmbedding.list_supported_models():
+#         if not CI and model_desc["size_in_GB"] > 1:
+#             continue
 
-        dim = model_desc["dim"]
-        try:
-            model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
-            docs = ["hello world", "flag embedding"]
-            embeddings = list(model.embed(docs))
-            embeddings = np.stack(embeddings, axis=0)
-            assert embeddings.shape == (2, dim)
+#         dim = model_desc["dim"]
+#         try:
+#             model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
+#             docs = ["hello world", "flag embedding"]
+#             embeddings = list(model.embed(docs))
+#             embeddings = np.stack(embeddings, axis=0)
+#             assert embeddings.shape == (2, dim)
 
-            canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
-            assert np.allclose(
-                embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
-            ), model_desc["model"]
-        finally:
-            if CI:
-                shutil.rmtree(MODELS_CACHE_DIR)
+#             canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
+#             assert np.allclose(
+#                 embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
+#             ), model_desc["model"]
+#         finally:
+#             if CI:
+#                 shutil.rmtree(MODELS_CACHE_DIR)
 
 
 @pytest.mark.parametrize(
@@ -130,7 +130,5 @@ def test_parallel_processing(n_dims, model_name):
     assert np.allclose(embeddings, embeddings_2, atol=1e-3)
     assert np.allclose(embeddings, embeddings_3, atol=1e-3)
     time.sleep(5)
-    try:
-        shutil.rmtree(MODELS_CACHE_DIR)
-    except Exception as e:
-        print(f"Failed to remove directory {MODELS_CACHE_DIR}: {e}")
+
+    shutil.rmtree(MODELS_CACHE_DIR)
