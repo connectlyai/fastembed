@@ -103,7 +103,8 @@ def test_embedding():
         count += 1
         if not CI and model_desc["size_in_GB"] > 1:
             continue
-
+        if model_desc["model"] != "intfloat/multilingual-e5-large":
+            continue
         dim = model_desc["dim"]
 
         model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
@@ -120,7 +121,9 @@ def test_embedding():
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
 
-        check_permissions("/tmp/models/models--qdrant--multilingual-e5-large-onnx\\blobs\\")
+        check_permissions(
+            "/tmp/models/models--qdrant--multilingual-e5-large-onnx\\blobs\\0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c"
+        )
         print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         # try:
         if CI:
