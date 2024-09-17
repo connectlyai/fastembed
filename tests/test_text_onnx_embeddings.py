@@ -1,6 +1,5 @@
 import os
 import shutil
-import traceback
 
 import numpy as np
 
@@ -94,11 +93,10 @@ def test_embedding():
 
         try:
             if CI:
-                # time.sleep(60)
                 shutil.rmtree(MODELS_CACHE_DIR)
+                print("================================")
         except PermissionError as e:
-            tb = traceback.format_exc()
-            print(f"got  permission error with traceback {tb} and error {e}")
+            print(f"got permission error with error {e}")
 
 
 # @pytest.mark.parametrize(
