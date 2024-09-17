@@ -1,5 +1,6 @@
 import os
 import shutil
+import traceback
 
 import numpy as np
 
@@ -74,34 +75,30 @@ def test_embedding():
         count += 1
         if not CI and model_desc["size_in_GB"] > 1:
             continue
-        print(
-            f"{model_desc} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-        )
+
         dim = model_desc["dim"]
-        print(f"{count} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+
         model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
         docs = ["hello world", "flag embedding"]
         embeddings = list(model.embed(docs))
-        print(
-            f"{embeddings} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-        )
+
         embeddings = np.stack(embeddings, axis=0)
-        print(
-            f"{embeddings} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-        )
+
         assert embeddings.shape == (2, dim)
 
         canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
-        print(
-            f"{canonical_vector} <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-        )
+
         assert np.allclose(
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
 
-        if CI:
-            # time.sleep(60)
-            shutil.rmtree(MODELS_CACHE_DIR)
+        try:
+            if CI:
+                # time.sleep(60)
+                shutil.rmtree(MODELS_CACHE_DIR)
+        except PermissionError as e:
+            tb = traceback.format_exc()
+            print(f"got  permission error with traceback {tb} and error {e}")
 
 
 # @pytest.mark.parametrize(
