@@ -42,14 +42,7 @@ jobs:
           python -m pip install poetry
           poetry config virtualenvs.create false
           poetry install --no-interaction --no-ansi --without docs --with dev
-      
-      - name: Set file permissions (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          icacls "/tmp/models/" /grant Everyone:F /T
 
       - name: Run pytest
         run: |
           poetry run pytest
-
-          
