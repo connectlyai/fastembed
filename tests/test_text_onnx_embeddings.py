@@ -1,4 +1,6 @@
 import os
+import shutil
+import time
 
 import numpy as np
 
@@ -83,8 +85,9 @@ def test_embedding():
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
 
-        # if CI:
-        #     shutil.rmtree(MODELS_CACHE_DIR)
+        if CI:
+            time.sleep(60)
+            shutil.rmtree(MODELS_CACHE_DIR)
 
 
 # @pytest.mark.parametrize(
