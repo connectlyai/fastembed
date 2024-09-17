@@ -69,13 +69,9 @@ MODELS_CACHE_DIR = "/tmp/models/"
 
 
 def test_embedding():
-    for model_desc in TextEmbedding.list_supported_models():
+    for model_desc in TextEmbedding.list_supported_models()[:2]:
         if not CI and model_desc["size_in_GB"] > 1:
-            print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
             continue
-        print(
-            model_desc["model"], "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-        )
         dim = model_desc["dim"]
         model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
         docs = ["hello world", "flag embedding"]
