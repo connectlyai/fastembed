@@ -119,7 +119,7 @@ def test_embedding():
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
 
-        check_permissions(MODELS_CACHE_DIR)
+        check_permissions("/tmp/models/models--qdrant--multilingual-e5-large-onnx\\blobs\\")
         print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         # try:
         if CI:
