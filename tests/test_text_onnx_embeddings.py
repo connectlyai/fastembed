@@ -89,7 +89,7 @@ def test_embedding():
         ), model_desc["model"]
 
         if CI:
-            time.sleep(60)
+            time.sleep(5)
             shutil.rmtree(MODELS_CACHE_DIR)
 
 
