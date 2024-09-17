@@ -1,6 +1,5 @@
 import shutil
 import os
-import time
 
 import numpy as np
 import pytest
@@ -66,6 +65,7 @@ CANONICAL_VECTOR_VALUES = {
 }
 
 CI = os.getenv("CI") == "true"
+print(CI, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 MODELS_CACHE_DIR = "/tmp/models/"
 
 
@@ -86,9 +86,12 @@ def test_embedding():
         assert np.allclose(
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
-        time.sleep(5)
+        # time.sleep(5)
         if CI:
-            shutil.rmtree(MODELS_CACHE_DIR)
+            try:
+                shutil.rmtree(MODELS_CACHE_DIR)
+            except Exception as e:
+                raise e
 
 
 @pytest.mark.parametrize(
