@@ -69,7 +69,7 @@ MODELS_CACHE_DIR = "/tmp/models/"
 
 
 def test_embedding():
-    for model_desc in TextEmbedding.list_supported_models()[:2]:
+    for model_desc in TextEmbedding.list_supported_models()[:-1]:
         if not CI and model_desc["size_in_GB"] > 1:
             continue
         dim = model_desc["dim"]
