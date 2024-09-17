@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import pytest
+from filelock import FileLock
 
 from fastembed.text.text_embedding import TextEmbedding
 
@@ -114,19 +115,21 @@ def test_batch_embedding(n_dims, model_name):
 def test_parallel_processing(n_dims, model_name):
     model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
 
-    docs = ["hello world", "flag embedding"] * 100
-    embeddings = list(model.embed(docs, batch_size=10, parallel=2))
-    embeddings = np.stack(embeddings, axis=0)
+    model_lock_file = os.path.join(MODELS_CACHE_DIR, "model.lock")
+    with FileLock(model_lock_file):
+        docs = ["hello world", "flag embedding"] * 100
+        embeddings = list(model.embed(docs, batch_size=10, parallel=2))
+        embeddings = np.stack(embeddings, axis=0)
 
-    embeddings_2 = list(model.embed(docs, batch_size=10, parallel=None))
-    embeddings_2 = np.stack(embeddings_2, axis=0)
+        embeddings_2 = list(model.embed(docs, batch_size=10, parallel=None))
+        embeddings_2 = np.stack(embeddings_2, axis=0)
 
-    embeddings_3 = list(model.embed(docs, batch_size=10, parallel=0))
-    embeddings_3 = np.stack(embeddings_3, axis=0)
+        embeddings_3 = list(model.embed(docs, batch_size=10, parallel=0))
+        embeddings_3 = np.stack(embeddings_3, axis=0)
 
-    assert embeddings.shape == (200, n_dims)
-    assert np.allclose(embeddings, embeddings_2, atol=1e-3)
-    assert np.allclose(embeddings, embeddings_3, atol=1e-3)
+        assert embeddings.shape == (200, n_dims)
+        assert np.allclose(embeddings, embeddings_2, atol=1e-3)
+        assert np.allclose(embeddings, embeddings_3, atol=1e-3)
 
     if CI:
         shutil.rmtree(MODELS_CACHE_DIR)
