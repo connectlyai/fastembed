@@ -2,8 +2,6 @@ import os
 import shutil
 import stat
 import errno
-import subprocess
-import platform
 
 import numpy as np
 import pytest
@@ -80,12 +78,7 @@ def handle_remove_readonly(func, path, exc):
 
 def cleanup_cache_dir():
     if os.path.exists(MODELS_CACHE_DIR):
-        if platform.system() == "Windows":
-            subprocess.run(
-                ["powershell", "Remove-Item", "-Recurse", "-Force", MODELS_CACHE_DIR], check=True
-            )
-        else:
-            shutil.rmtree(MODELS_CACHE_DIR)
+        shutil.rmtree(MODELS_CACHE_DIR, onerror=handle_remove_readonly)
 
 
 CI = os.getenv("CI") == "true"
