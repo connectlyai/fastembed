@@ -85,7 +85,9 @@ def test_embedding():
         assert np.allclose(
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
-
+        if model_desc["model"] == "intfloat/multilingual-e5-large":
+            print(embeddings)
+            print(canonical_vector)
         if CI:
             if os.path.isfile(MODELS_CACHE_DIR):
                 os.remove(MODELS_CACHE_DIR)
