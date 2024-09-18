@@ -94,7 +94,9 @@ def test_embedding():
         dim = model_desc["dim"]
         if model_desc["model"] != "intfloat/multilingual-e5-large":
             continue
-        model = TextEmbedding(model_name=model_desc["model"], cache_dir=Path(MODELS_CACHE_DIR))
+        print(str(MODELS_CACHE_DIR), "<<<<<<<<<<<<<<<<<<<")
+        print(Path(MODELS_CACHE_DIR), "<<<<<<<<<<<<<<<<<<<")
+        model = TextEmbedding(model_name=model_desc["model"], cache_dir=str(MODELS_CACHE_DIR))
         docs = ["hello world", "flag embedding"]
         embeddings = list(model.embed(docs))
         embeddings = np.stack(embeddings, axis=0)
