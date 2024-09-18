@@ -1,6 +1,6 @@
 import os
 import shutil
-from pathlib import Path
+import tempfile
 
 
 import numpy as np
@@ -83,7 +83,7 @@ def remove_tree_with_permissions(path: str):
 
 
 CI = os.getenv("CI") == "true"
-MODELS_CACHE_DIR = Path(os.getenv("MODELS_CACHE_DIR", "models"))
+MODELS_CACHE_DIR = tempfile.TemporaryDirectory() if CI else "models"
 
 
 def test_embedding():
@@ -107,7 +107,7 @@ def test_embedding():
             print(embeddings)
             print(canonical_vector)
         if CI:
-            remove_tree_with_permissions(MODELS_CACHE_DIR)
+            MODELS_CACHE_DIR.cleanup()
 
 
 # @pytest.mark.parametrize(
