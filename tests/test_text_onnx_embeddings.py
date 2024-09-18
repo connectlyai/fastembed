@@ -1,7 +1,6 @@
 import os
 import shutil
 import tempfile
-from pathlib import Path
 
 
 import numpy as np
@@ -94,9 +93,8 @@ def test_embedding():
         dim = model_desc["dim"]
         if model_desc["model"] != "intfloat/multilingual-e5-large":
             continue
-        print(str(MODELS_CACHE_DIR), "<<<<<<<<<<<<<<<<<<<")
-        print(Path(MODELS_CACHE_DIR), "<<<<<<<<<<<<<<<<<<<")
-        model = TextEmbedding(model_name=model_desc["model"], cache_dir=str(MODELS_CACHE_DIR))
+        print(MODELS_CACHE_DIR.name, "<<<<<<<<<<<<<<<<<,")
+        model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR.name)
         docs = ["hello world", "flag embedding"]
         embeddings = list(model.embed(docs))
         embeddings = np.stack(embeddings, axis=0)
