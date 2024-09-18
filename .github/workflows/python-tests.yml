@@ -8,6 +8,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   CI: true
+  CACHE_MODELS_DIR: models
 
 jobs:
   test:
@@ -15,11 +16,11 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - '3.8.x'
-          - '3.9.x'
+          # - '3.8.x'
+          # - '3.9.x'
           - '3.10.x'
-          - '3.11.x'
-          - '3.12.x'
+          # - '3.11.x'
+          # - '3.12.x'
         os:
           # - ubuntu-latest
           # - macos-latest

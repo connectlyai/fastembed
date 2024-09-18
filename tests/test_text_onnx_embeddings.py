@@ -68,11 +68,7 @@ CANONICAL_VECTOR_VALUES = {
 
 
 CI = os.getenv("CI") == "true"
-if os.name == "nt":
-    print("------------------ windows ------------------")
-    MODELS_CACHE_DIR = Path("C:\\temp\\models\\")
-else:
-    MODELS_CACHE_DIR = Path("/tmp/models/")
+MODELS_CACHE_DIR = Path(os.getenv("MODELS_CACHE_DIR", "models"))
 
 
 def test_embedding():
