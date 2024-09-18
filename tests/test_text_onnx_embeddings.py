@@ -1,5 +1,5 @@
 import os
-from tempfile import gettempdir
+import tempfile
 
 import numpy as np
 
@@ -93,7 +93,7 @@ def check_permissions(folder: str):
 
 CI = os.getenv("CI") == "true"
 
-MODELS_CACHE_DIR = gettempdir() if CI else "/tmp/models/"
+MODELS_CACHE_DIR = "/tmp/models/"
 
 
 def list_directory_contents(directory: str):
@@ -118,27 +118,27 @@ def test_embedding():
             continue
         # if model_desc["model"] != "intfloat/multilingual-e5-large":
         #     continue
-        dim = model_desc["dim"]
+        with tempfile.TemporaryDirectory() as temp_dir:
+            dim = model_desc["dim"]
 
-        model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
-        docs = ["hello world", "flag embedding"]
-        embeddings = list(model.embed(docs))
+            model = TextEmbedding(model_name=model_desc["model"], cache_dir=temp_dir)
+            docs = ["hello world", "flag embedding"]
+            embeddings = list(model.embed(docs))
 
-        embeddings = np.stack(embeddings, axis=0)
+            embeddings = np.stack(embeddings, axis=0)
 
-        assert embeddings.shape == (2, dim)
+            assert embeddings.shape == (2, dim)
 
-        canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
+            canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
 
-        assert np.allclose(
-            embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
-        ), model_desc["model"]
+            assert np.allclose(
+                embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
+            ), model_desc["model"]
 
-        # check_permissions(MODELS_CACHE_DIR)
-        list_directory_contents(temp)
-        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-        if model_desc["model"] == "intfloat/multilingual-e5-large":
-            print(model_desc["hos"])
+            # check_permissions(MODELS_CACHE_DIR)
+            list_directory_contents(temp_dir)
+            print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
         # try:
         # if CI:
         #     list_directory_contents(temp)
