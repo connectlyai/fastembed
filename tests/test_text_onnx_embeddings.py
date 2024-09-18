@@ -2,6 +2,7 @@ import os
 import shutil
 
 import numpy as np
+import pytest
 
 from fastembed.text.text_embedding import TextEmbedding
 
@@ -64,60 +65,15 @@ CANONICAL_VECTOR_VALUES = {
 }
 
 
-def check_permissions(folder: str):
-    print(f"Checking permissions for folder: {folder}")
-
-    # Check if folder exists
-    if not os.path.exists(folder):
-        print(f"Folder {folder} does not exist.")
-        return
-
-    # Check read permission
-    if os.access(folder, os.R_OK):
-        print(f"{folder} is readable.")
-    else:
-        print(f"{folder} is NOT readable.")
-
-    # Check write permission
-    if os.access(folder, os.W_OK):
-        print(f"{folder} is writable.")
-    else:
-        print(f"{folder} is NOT writable.")
-
-    # Check execute permission
-    if os.access(folder, os.X_OK):
-        print(f"{folder} is executable.")
-    else:
-        print(f"{folder} is NOT executable.")
-
-
 CI = os.getenv("CI") == "true"
 
 MODELS_CACHE_DIR = "/tmp/models/"
 
 
-def list_directory_contents(directory: str):
-    try:
-        # List all files and directories in the specified directory
-        for root, dirs, files in os.walk(directory):
-            print(f"Root: {root}")
-            print(f"Directories: {dirs}")
-            print(f"Files: {files}")
-    except Exception as e:
-        print(f"Error accessing directory {directory}: {e}")
-
-
-temp = "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\"
-
-
 def test_embedding():
-    count = 0
     for model_desc in TextEmbedding.list_supported_models():
-        count += 1
         if not CI and model_desc["size_in_GB"] > 1:
             continue
-        # if model_desc["model"] != "intfloat/multilingual-e5-large":
-        #     continue
         dim = model_desc["dim"]
 
         model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
@@ -134,58 +90,51 @@ def test_embedding():
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
 
-        # check_permissions(MODELS_CACHE_DIR)
-        list_directory_contents(MODELS_CACHE_DIR)
-        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-
-        # try:
         if CI:
             if os.path.isfile(MODELS_CACHE_DIR):
                 os.remove(MODELS_CACHE_DIR)
             else:
                 shutil.rmtree(MODELS_CACHE_DIR)
             return
-        # except PermissionError as e:
-        #     print(f"got permission error with error {e}")
 
 
-# @pytest.mark.parametrize(
-#     "n_dims,model_name",
-#     [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
-# )
-# def test_batch_embedding(n_dims, model_name):
-#     model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
+@pytest.mark.parametrize(
+    "n_dims,model_name",
+    [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
+)
+def test_batch_embedding(n_dims, model_name):
+    model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
 
-#     docs = ["hello world", "flag embedding"] * 100
-#     embeddings = list(model.embed(docs, batch_size=10))
-#     embeddings = np.stack(embeddings, axis=0)
+    docs = ["hello world", "flag embedding"] * 100
+    embeddings = list(model.embed(docs, batch_size=10))
+    embeddings = np.stack(embeddings, axis=0)
 
-#     assert embeddings.shape == (200, n_dims)
-#     time.sleep(5)
-#     if CI:
-#         shutil.rmtree(MODELS_CACHE_DIR)
+    assert embeddings.shape == (200, n_dims)
+
+    if CI:
+        shutil.rmtree(MODELS_CACHE_DIR)
 
 
-# @pytest.mark.parametrize(
-#     "n_dims,model_name",
-#     [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
-# )
-# def test_parallel_processing(n_dims, model_name):
-#     model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
+@pytest.mark.parametrize(
+    "n_dims,model_name",
+    [(384, "BAAI/bge-small-en-v1.5"), (768, "jinaai/jina-embeddings-v2-base-en")],
+)
+def test_parallel_processing(n_dims, model_name):
+    model = TextEmbedding(model_name=model_name, cache_dir=MODELS_CACHE_DIR)
 
-#     docs = ["hello world", "flag embedding"] * 100
-#     embeddings = list(model.embed(docs, batch_size=10, parallel=2))
-#     embeddings = np.stack(embeddings, axis=0)
+    docs = ["hello world", "flag embedding"] * 100
+    embeddings = list(model.embed(docs, batch_size=10, parallel=2))
+    embeddings = np.stack(embeddings, axis=0)
 
-#     embeddings_2 = list(model.embed(docs, batch_size=10, parallel=None))
-#     embeddings_2 = np.stack(embeddings_2, axis=0)
+    embeddings_2 = list(model.embed(docs, batch_size=10, parallel=None))
+    embeddings_2 = np.stack(embeddings_2, axis=0)
 
-#     embeddings_3 = list(model.embed(docs, batch_size=10, parallel=0))
-#     embeddings_3 = np.stack(embeddings_3, axis=0)
+    embeddings_3 = list(model.embed(docs, batch_size=10, parallel=0))
+    embeddings_3 = np.stack(embeddings_3, axis=0)
 
-#     assert embeddings.shape == (200, n_dims)
-#     assert np.allclose(embeddings, embeddings_2, atol=1e-3)
-#     assert np.allclose(embeddings, embeddings_3, atol=1e-3)
-#     time.sleep(5)
+    assert embeddings.shape == (200, n_dims)
+    assert np.allclose(embeddings, embeddings_2, atol=1e-3)
+    assert np.allclose(embeddings, embeddings_3, atol=1e-3)
 
-#     shutil.rmtree(MODELS_CACHE_DIR)
+    if CI:
+        shutil.rmtree(MODELS_CACHE_DIR)
