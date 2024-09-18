@@ -1,6 +1,7 @@
 import os
 import shutil
 from pathlib import Path
+import psutil
 
 
 import numpy as np
@@ -86,6 +87,14 @@ CI = os.getenv("CI") == "true"
 MODELS_CACHE_DIR = Path("m")
 
 
+def kill_processes_using_file(file_path):
+    for proc in psutil.process_iter(["pid", "name"]):
+        for file in proc.open_files():
+            if file.path == file_path:
+                print(f"Killing process {proc.info['pid']} using {file_path}")
+                proc.terminate()  # or proc.kill()
+
+
 def test_embedding():
     for model_desc in TextEmbedding.list_supported_models():
         if not CI and model_desc["size_in_GB"] > 1:
@@ -117,6 +126,7 @@ def test_embedding():
             new_path = (
                 MODELS_CACHE_DIR / "models--qdrant--multilingual-e5-large-onnx" / "blobs" / "a"
             )
+            kill_processes_using_file(model_path)
             os.rename(str(model_path), str(new_path))
             shutil.rmtree(str(MODELS_CACHE_DIR))
             shutil.rmtree(MODELS_CACHE_DIR)
