@@ -82,7 +82,7 @@ def remove_tree_with_permissions(path: str):
 
 
 CI = os.getenv("CI") == "true"
-MODELS_CACHE_DIR = "/tmp"
+MODELS_CACHE_DIR = "m"
 
 
 def test_embedding():
