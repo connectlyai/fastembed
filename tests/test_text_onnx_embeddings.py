@@ -141,7 +141,7 @@ def test_embedding():
         # try:
         if CI:
             if os.path.isfile(MODELS_CACHE_DIR):
-                os.unlink(MODELS_CACHE_DIR)
+                os.remove(MODELS_CACHE_DIR)
             else:
                 shutil.rmtree(MODELS_CACHE_DIR)
             return
