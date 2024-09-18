@@ -47,7 +47,9 @@ jobs:
       - name: Run pytest with admin (Windows)
         if: runner.os == 'Windows'
         run: |
-          PowerShell -Command "Start-Process poetry -ArgumentList 'run pytest' -Verb RunAs"
+          Invoke-WebRequest -Uri "https://download.sysinternals.com/files/PSTools.zip" -OutFile "PSTools.zip"
+          Expand-Archive -Path "PSTools.zip" -DestinationPath "PSTools"
+          .\PSTools\PsExec.exe -u Administrator poetry run pytest
 
       - name: Run pytest (Non-Windows)
         if: runner.os != 'Windows'
