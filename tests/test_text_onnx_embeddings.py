@@ -108,8 +108,8 @@ def test_embedding():
         if CI:
             print(MODELS_CACHE_DIR, "<<<<<<<<<<<<")
             os.rename(
-                "a\\models--qdrant--multilingual-e5-large-onnx\\blobs\\0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c",
-                "a\\models--qdrant--multilingual-e5-large-onnx\\blobs\\a",
+                "m\\models--qdrant--multilingual-e5-large-onnx\\blobs\\0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c",
+                "m\\models--qdrant--multilingual-e5-large-onnx\\blobs\\a",
             )
             shutil.rmtree(MODELS_CACHE_DIR)
 
