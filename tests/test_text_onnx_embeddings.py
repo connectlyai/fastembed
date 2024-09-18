@@ -1,7 +1,7 @@
 import os
 import shutil
 import time
-import gc
+from tempfile import gettempdir
 
 import numpy as np
 
@@ -95,7 +95,21 @@ def check_permissions(folder: str):
 
 CI = os.getenv("CI") == "true"
 
-MODELS_CACHE_DIR = "/tmp/models/"
+MODELS_CACHE_DIR = gettempdir() if CI else "/tmp/models/"
+
+
+def list_directory_contents(directory: str):
+    try:
+        # List all files and directories in the specified directory
+        for root, dirs, files in os.walk(directory):
+            print(f"Root: {root}")
+            print(f"Directories: {dirs}")
+            print(f"Files: {files}")
+    except Exception as e:
+        print(f"Error accessing directory {directory}: {e}")
+
+
+temp = "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\"
 
 
 def test_embedding():
@@ -104,8 +118,8 @@ def test_embedding():
         count += 1
         if not CI and model_desc["size_in_GB"] > 1:
             continue
-        if model_desc["model"] != "intfloat/multilingual-e5-large":
-            continue
+        # if model_desc["model"] != "intfloat/multilingual-e5-large":
+        #     continue
         dim = model_desc["dim"]
 
         model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
@@ -122,13 +136,12 @@ def test_embedding():
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
 
-        check_permissions(
-            "/tmp/models/models--qdrant--multilingual-e5-large-onnx\\blobs\\0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c"
-        )
+        check_permissions(MODELS_CACHE_DIR)
+        list_directory_contents(MODELS_CACHE_DIR)
         print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         # try:
         if CI:
-            gc.collect()
+            list_directory_contents(temp)
             shutil.rmtree(MODELS_CACHE_DIR)
             print("================================")
             time.sleep(20)
