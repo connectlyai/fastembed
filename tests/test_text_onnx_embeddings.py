@@ -67,6 +67,15 @@ CANONICAL_VECTOR_VALUES = {
 }
 
 
+def remove_tree(path: str) -> None:
+    for root, dirs, files in os.walk(path, topdown=False):
+        for name in files:
+            os.remove(os.path.join(root, name))
+        for name in dirs:
+            os.rmdir(os.path.join(root, name))
+    os.rmdir(path)
+
+
 CI = os.getenv("CI") == "true"
 MODELS_CACHE_DIR = Path(os.getenv("MODELS_CACHE_DIR", "models"))
 
@@ -91,7 +100,7 @@ def test_embedding():
             print(embeddings)
             print(canonical_vector)
         if CI:
-            shutil.rmtree(MODELS_CACHE_DIR)
+            remove_tree(MODELS_CACHE_DIR)
 
 
 @pytest.mark.parametrize(
