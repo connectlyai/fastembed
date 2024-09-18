@@ -66,7 +66,6 @@ CANONICAL_VECTOR_VALUES = {
 
 
 CI = os.getenv("CI") == "true"
-
 MODELS_CACHE_DIR = "/tmp/models/"
 
 
@@ -79,13 +78,10 @@ def test_embedding():
         model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
         docs = ["hello world", "flag embedding"]
         embeddings = list(model.embed(docs))
-
         embeddings = np.stack(embeddings, axis=0)
-
         assert embeddings.shape == (2, dim)
 
         canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
-
         assert np.allclose(
             embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
         ), model_desc["model"]
@@ -95,7 +91,6 @@ def test_embedding():
                 os.remove(MODELS_CACHE_DIR)
             else:
                 shutil.rmtree(MODELS_CACHE_DIR)
-            return
 
 
 @pytest.mark.parametrize(
