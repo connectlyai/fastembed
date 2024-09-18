@@ -1,5 +1,6 @@
 import os
 import shutil
+from pathlib import Path
 
 
 import numpy as np
@@ -82,7 +83,7 @@ def remove_tree_with_permissions(path: str):
 
 
 CI = os.getenv("CI") == "true"
-MODELS_CACHE_DIR = "m"
+MODELS_CACHE_DIR = Path("m")
 
 
 def test_embedding():
@@ -107,10 +108,17 @@ def test_embedding():
             print(canonical_vector)
         if CI:
             print(MODELS_CACHE_DIR, "<<<<<<<<<<<<")
-            os.rename(
-                "m\\models--qdrant--multilingual-e5-large-onnx\\blobs\\0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c",
-                "m\\models--qdrant--multilingual-e5-large-onnx\\blobs\\a",
+            model_path = (
+                MODELS_CACHE_DIR
+                / "models--qdrant--multilingual-e5-large-onnx"
+                / "blobs"
+                / "0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c"
             )
+            new_path = (
+                MODELS_CACHE_DIR / "models--qdrant--multilingual-e5-large-onnx" / "blobs" / "a"
+            )
+            os.rename(str(model_path), str(new_path))
+            shutil.rmtree(str(MODELS_CACHE_DIR))
             shutil.rmtree(MODELS_CACHE_DIR)
 
 
