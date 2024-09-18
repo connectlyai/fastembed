@@ -137,6 +137,8 @@ def test_embedding():
         # check_permissions(MODELS_CACHE_DIR)
         list_directory_contents(temp)
         print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+        if model_desc["model"] == "intfloat/multilingual-e5-large":
+            print(model_desc["hos"])
         # try:
         # if CI:
         #     list_directory_contents(temp)
