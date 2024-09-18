@@ -112,7 +112,7 @@ def test_embedding():
             print(embeddings)
             print(canonical_vector)
         if CI:
-            cleanup_cache_dir(MODELS_CACHE_DIR)
+            cleanup_cache_dir()
 
 
 @pytest.mark.parametrize(
