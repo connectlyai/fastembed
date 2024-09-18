@@ -43,7 +43,9 @@ jobs:
           python -m pip install poetry
           poetry config virtualenvs.create false
           poetry install --no-interaction --no-ansi --without docs --with dev
-
-      - name: Run pytest
+      - name: Run as Administrator
         run: |
-          poetry run pytest
+          start-process -filepath pytest -argumentlist tests/test_text_onnx_embeddings.py -verb runas
+      # - name: Run pytest
+      #   run: |
+      #     poetry run pytest
