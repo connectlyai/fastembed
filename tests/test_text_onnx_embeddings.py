@@ -116,19 +116,19 @@ def test_embedding():
             print(embeddings)
             print(canonical_vector)
         if CI:
-            print(MODELS_CACHE_DIR, "<<<<<<<<<<<<")
-            model_path = (
-                MODELS_CACHE_DIR
-                / "models--qdrant--multilingual-e5-large-onnx"
-                / "blobs"
-                / "0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c"
-            )
-            new_path = (
-                MODELS_CACHE_DIR / "models--qdrant--multilingual-e5-large-onnx" / "blobs" / "a"
-            )
-            kill_processes_using_file(model_path)
-            os.rename(str(model_path), str(new_path))
-            shutil.rmtree(str(MODELS_CACHE_DIR))
+            # print(MODELS_CACHE_DIR, "<<<<<<<<<<<<")
+            # model_path = (
+            #     MODELS_CACHE_DIR
+            #     / "models--qdrant--multilingual-e5-large-onnx"
+            #     / "blobs"
+            #     / "0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c"
+            # )
+            # new_path = (
+            #     MODELS_CACHE_DIR / "models--qdrant--multilingual-e5-large-onnx" / "blobs" / "a"
+            # )
+            # kill_processes_using_file(model_path)
+            # os.rename(str(model_path), str(new_path))
+            # shutil.rmtree(str(MODELS_CACHE_DIR))
             shutil.rmtree(MODELS_CACHE_DIR)
 
 
