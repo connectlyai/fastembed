@@ -1,6 +1,5 @@
 import os
 import shutil
-import tempfile
 
 
 import numpy as np
@@ -83,7 +82,7 @@ def remove_tree_with_permissions(path: str):
 
 
 CI = os.getenv("CI") == "true"
-MODELS_CACHE_DIR = tempfile.TemporaryDirectory() if CI else "models"
+MODELS_CACHE_DIR = "/tmp"
 
 
 def test_embedding():
@@ -93,8 +92,7 @@ def test_embedding():
         dim = model_desc["dim"]
         if model_desc["model"] != "intfloat/multilingual-e5-large":
             continue
-        print(MODELS_CACHE_DIR.name, "<<<<<<<<<<<<<<<<<,")
-        model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR.name)
+        model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
         docs = ["hello world", "flag embedding"]
         embeddings = list(model.embed(docs))
         embeddings = np.stack(embeddings, axis=0)
@@ -108,7 +106,12 @@ def test_embedding():
             print(embeddings)
             print(canonical_vector)
         if CI:
-            MODELS_CACHE_DIR.cleanup()
+            print(MODELS_CACHE_DIR, "<<<<<<<<<<<<")
+            os.rename(
+                "/tmp\\models--qdrant--multilingual-e5-large-onnx\\blobs\\0cf1883fee81c63819a44e2ba0efa51d4043d9759685a4ebebbde97e0623d15c",
+                "/tmp\\models--qdrant--multilingual-e5-large-onnx\\blobs\\a",
+            )
+            shutil.rmtree(MODELS_CACHE_DIR)
 
 
 # @pytest.mark.parametrize(
