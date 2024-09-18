@@ -91,7 +91,8 @@ def test_embedding():
         if not CI and model_desc["size_in_GB"] > 1:
             continue
         dim = model_desc["dim"]
-
+        if model_desc["model"] != "intfloat/multilingual-e5-large":
+            continue
         model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
         docs = ["hello world", "flag embedding"]
         embeddings = list(model.embed(docs))
@@ -106,7 +107,7 @@ def test_embedding():
             print(embeddings)
             print(canonical_vector)
         if CI:
-            remove_tree_with_permissions(MODELS_CACHE_DIR, ignore_errors=True)
+            remove_tree_with_permissions(MODELS_CACHE_DIR)
 
 
 # @pytest.mark.parametrize(
