@@ -1,5 +1,5 @@
 import os
-import tempfile
+import shutil
 
 import numpy as np
 
@@ -118,33 +118,33 @@ def test_embedding():
             continue
         # if model_desc["model"] != "intfloat/multilingual-e5-large":
         #     continue
-        with tempfile.TemporaryDirectory() as temp_dir:
-            dim = model_desc["dim"]
+        dim = model_desc["dim"]
 
-            model = TextEmbedding(model_name=model_desc["model"], cache_dir=temp_dir)
-            docs = ["hello world", "flag embedding"]
-            embeddings = list(model.embed(docs))
+        model = TextEmbedding(model_name=model_desc["model"], cache_dir=MODELS_CACHE_DIR)
+        docs = ["hello world", "flag embedding"]
+        embeddings = list(model.embed(docs))
 
-            embeddings = np.stack(embeddings, axis=0)
+        embeddings = np.stack(embeddings, axis=0)
 
-            assert embeddings.shape == (2, dim)
+        assert embeddings.shape == (2, dim)
 
-            canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
+        canonical_vector = CANONICAL_VECTOR_VALUES[model_desc["model"]]
 
-            assert np.allclose(
-                embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
-            ), model_desc["model"]
+        assert np.allclose(
+            embeddings[0, : canonical_vector.shape[0]], canonical_vector, atol=1e-3
+        ), model_desc["model"]
 
-            # check_permissions(MODELS_CACHE_DIR)
-            list_directory_contents(temp_dir)
-            print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+        # check_permissions(MODELS_CACHE_DIR)
+        list_directory_contents(MODELS_CACHE_DIR)
+        print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 
         # try:
-        # if CI:
-        #     list_directory_contents(temp)
-        #     shutil.rmtree(MODELS_CACHE_DIR)
-        #     print("================================")
-        #     time.sleep(20)
+        if CI:
+            if os.path.isfile(MODELS_CACHE_DIR):
+                os.unlink(MODELS_CACHE_DIR)
+            else:
+                shutil.rmtree(MODELS_CACHE_DIR)
+            return
         # except PermissionError as e:
         #     print(f"got permission error with error {e}")
 
