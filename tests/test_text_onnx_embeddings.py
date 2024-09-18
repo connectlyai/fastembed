@@ -1,5 +1,7 @@
 import os
 import shutil
+import stat
+import errno
 
 import numpy as np
 import pytest
@@ -65,6 +67,20 @@ CANONICAL_VECTOR_VALUES = {
 }
 
 
+def handle_remove_readonly(func, path, exc):
+    # Check if the error is due to a permission issue
+    excvalue = exc[1]
+    if func in (os.rmdir, os.remove, os.unlink) and excvalue.errno == errno.EACCES:
+        # Make the file writable and try again
+        os.chmod(path, stat.S_IRWXU)
+        func(path)
+
+
+def cleanup_cache_dir():
+    if os.path.exists(MODELS_CACHE_DIR):
+        shutil.rmtree(MODELS_CACHE_DIR, onerror=handle_remove_readonly)
+
+
 CI = os.getenv("CI") == "true"
 MODELS_CACHE_DIR = "/tmp/models/"
 
@@ -89,10 +105,7 @@ def test_embedding():
             print(embeddings)
             print(canonical_vector)
         if CI:
-            if os.path.isfile(MODELS_CACHE_DIR):
-                os.remove(MODELS_CACHE_DIR)
-            else:
-                shutil.rmtree(MODELS_CACHE_DIR)
+            cleanup_cache_dir(MODELS_CACHE_DIR)
 
 
 @pytest.mark.parametrize(
